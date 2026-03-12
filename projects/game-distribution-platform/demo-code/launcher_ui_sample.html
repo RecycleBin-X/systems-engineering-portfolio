@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="styles/desktop_notification.css">
+    <link rel="stylesheet" href="tailwind/flowbite/flowbite.min.css">
+</head>
+<body>
+    <div class="bg">
+        <div class="title-bar">
+            <svg class="close-button" onclick="App.onClose()" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path class="btn-svg" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </div>
+        <img class="absolute top-2 pl-3 h-12" src="resources/IPGame_Small.png" draggable="false">
+        <div class="mt-2 h-28 content-center items-center flex">
+            <img class="ml-[50px] w-[64px] h-[64px]" id="gameLogo" src="resources/games/my_game/GameIcon_Prompt.png" draggable="false">
+            <div>
+                <div class="ml-6 text-white text-[20px]" id="app-name">GAME_ONE</div>
+                <div class="ml-6 text-[#9b9693] mt-1 text-[15px]" id="notification-type">Update Done</div>
+            </div>
+        </div>
+        <div class="footer">
+            <button class="confirm-button" onclick="launchGame()" data-i18n="desktopNotification.launchApp"><span>LAUNCH</span></button>
+            <button class="cancel-button" onclick="App.onClose()" data-i18n="desktopNotification.checkLater"><span>LATER</span></button>
+        </div>
+    </div>
+
+    <script src="tailwind/tailwind.js"></script>
+    <script src="tailwind/flowbite/flowbite.min.js"></script>
+	<script src="scripts/logic/locale.js"></script>
+    <script>
+        async function setNotification(type, appName, appInternalName) {
+            var localeString = await App.getLocaleString();
+            await loadLanguageFile(localeString);
+
+            document.getElementById('app-name').textContent = appName;
+            document.getElementById('gameLogo').src = 'resources/games/' + appInternalName + '/GameIcon_Prompt.png';
+            if (type === 0) {
+                document.getElementById('notification-type').textContent = languageData['desktopNotification.installComplete'];
+            } else if (type === 1) {
+                document.getElementById('notification-type').textContent = languageData['desktopNotification.updateComplete'];
+            } else {
+                document.getElementById('notification-type').textContent = '';
+            }
+        }
+
+        (async function () {
+            if (typeof CefSharp == "undefined") {
+                // for debugging..
+                await loadLanguageFile('en-US');
+                return;
+            }
+
+            await CefSharp.BindObjectAsync('App');
+
+            var localeString = await App.getLocaleString();
+            await loadLanguageFile(localeString);
+
+            App.onReady();
+        })();
+    </script>
+</body>
+
+</html>
